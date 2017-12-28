@@ -17,6 +17,30 @@ import java.util.Objects;
 public interface Unappliable {
 
     /**
+     * An empty {@link Unappliable}.
+     */
+    Unappliable EMPTY = () -> {
+    };
+
+    /**
+     * Accepts a vararg of {@link Unappliable} objects and
+     * returns a composed {@link Unappliable} that performs, in sequence,
+     * all operations.
+     *
+     * @param unapplies the {@link Unappliable} objects
+     * @return a composed {@link Unappliable} that performs, in sequence, all operations
+     * @throws NullPointerException if {@code unapplies} is null or if vararg {@code unapplies} contains null elements
+     */
+    static Unappliable all(Unappliable... unapplies) {
+        Objects.requireNonNull(unapplies, "Unapplies are null.");
+        return Arrays.stream(unapplies)
+                     .map(u -> Objects.requireNonNull(u,
+                             "Varargs argument \"unapplies\" in \"all(unapplies)\" contains null."))
+                     .reduce(Unappliable::andThen)
+                     .orElse(EMPTY);
+    }
+
+    /**
      * Performs a specific operation.
      */
     void unapply();
@@ -40,28 +64,4 @@ public interface Unappliable {
             after.unapply();
         };
     }
-
-    /**
-     * Accepts a vararg of {@link Unappliable} objects and
-     * returns a composed {@link Unappliable} that performs, in sequence,
-     * all operations.
-     *
-     * @param unapplies the {@link Unappliable} objects
-     * @return a composed {@link Unappliable} that performs, in sequence, all operations
-     * @throws NullPointerException if {@code unapplies} is null or if vararg {@code unapplies} contains null elements
-     */
-    static Unappliable all(Unappliable... unapplies) {
-        Objects.requireNonNull(unapplies, "Unapplies are null.");
-        return Arrays.stream(unapplies)
-                     .map(u -> Objects.requireNonNull(u,
-                             "Varargs argument \"unapplies\" in \"all(unapplies)\" contains null."))
-                     .reduce(Unappliable::andThen)
-                     .orElse(EMPTY);
-    }
-
-    /**
-     * An empty {@link Unappliable}.
-     */
-    Unappliable EMPTY = () -> {
-    };
 }

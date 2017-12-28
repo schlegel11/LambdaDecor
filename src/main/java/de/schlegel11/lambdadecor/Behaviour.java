@@ -19,6 +19,69 @@ import java.util.stream.Stream;
 public interface Behaviour<T> {
 
     /**
+     * Add all {@link Function}s contained by the {@link Function} vararg.
+     * <p>
+     * For more see {@link #withAll(Stream)}.
+     *
+     * @param behaviour {@link Behaviour} whose {@link #withAll(Stream)} method is called
+     * @param functions {@link Function} vararg
+     * @param <T>       type for this behaviour
+     * @return new {@link Behaviour} with added {@link Function}s
+     * @throws NullPointerException If behaviour is null or
+     *                              if functions is null
+     */
+    @SafeVarargs
+    static <T> Behaviour<T> withAll(final Behaviour<T> behaviour, final Function<T, T>... functions) {
+        Objects.requireNonNull(behaviour,
+                "Behaviour argument \"updateBehaviour\" in \"withAll(updateBehaviour, ...)\" is null.");
+        Objects.requireNonNull(functions, "Varags \"functions\" in \"withAll(..., functions)\" is null.");
+
+        return behaviour.withAll(Arrays.stream(functions));
+    }
+
+    /**
+     * Add all {@link Function}s contained by the {@link Function} vararg.
+     * <p>
+     * For more see {@link #withUnapplyAll(Stream)}.
+     *
+     * @param behaviour {@link Behaviour} whose {@link #withUnapplyAll(Stream)} method is called
+     * @param functions {@link Function} vararg
+     * @param <T>       type for this behaviour
+     * @return new {@link Behaviour} with added {@link Function}s
+     * @throws NullPointerException if behaviour is null or
+     *                              if functions is null
+     */
+    @SafeVarargs
+    static <T> Behaviour<T> withUnapplyAll(final Behaviour<T> behaviour, final Function<T, Unappliable>... functions) {
+        Objects.requireNonNull(behaviour,
+                "Behaviour argument \"updateBehaviour\" in \"withUnapplyAll(updateBehaviour, ...)\" is null.");
+        Objects.requireNonNull(functions, "Varags \"functions\" in \"withUnapplyAll(..., functions)\" is null.");
+
+        return behaviour.withUnapplyAll(Arrays.stream(functions));
+    }
+
+    /**
+     * Add all {@link Behaviour}s contained by the {@link Behaviour} vararg.
+     * <p>
+     * For more see {@link #withUnapplyAll(Stream)}.
+     *
+     * @param behaviour  {@link Behaviour} whose {@link #mergeAll(Stream)} method is called
+     * @param behaviours {@link Behaviour} vararg
+     * @param <T>        type for this behaviour
+     * @return new merged {@link Behaviour}
+     * @throws NullPointerException if behaviour is null or
+     *                              if behaviours is null
+     */
+    @SafeVarargs
+    static <T> Behaviour<T> mergeAll(final Behaviour<T> behaviour, final Behaviour<T>... behaviours) {
+        Objects.requireNonNull(behaviour,
+                "Behaviour argument \"updateBehaviour\" in \"mergeAll(updateBehaviour, ...)\" is null.");
+        Objects.requireNonNull(behaviours, "Varags \"behaviours\" in \"mergeAll(..., behaviours)\" is null.");
+
+        return behaviour.mergeAll(Arrays.stream(behaviours));
+    }
+
+    /**
      * Adds a {@link Function} that accepts and returns a specific type {@link T}.
      * <br>
      * The returned type {@link T} is passed to the next {@link Function}.
@@ -47,27 +110,6 @@ public interface Behaviour<T> {
                 "Stream argument \"functionStream\" in \"withAll(functionStream)\" contains null."))
                                   .reduce(Function::andThen)
                                   .orElse(Function.identity()));
-    }
-
-    /**
-     * Add all {@link Function}s contained by the {@link Function} vararg.
-     * <p>
-     * For more see {@link #withAll(Stream)}.
-     *
-     * @param behaviour {@link Behaviour} whose {@link #withAll(Stream)} method is called
-     * @param functions {@link Function} vararg
-     * @param <T>       type for this behaviour
-     * @return new {@link Behaviour} with added {@link Function}s
-     * @throws NullPointerException If behaviour is null or
-     *                              if functions is null
-     */
-    @SafeVarargs
-    static <T> Behaviour<T> withAll(final Behaviour<T> behaviour, final Function<T, T>... functions) {
-        Objects.requireNonNull(behaviour,
-                "Behaviour argument \"updateBehaviour\" in \"withAll(updateBehaviour, ...)\" is null.");
-        Objects.requireNonNull(functions, "Varags \"functions\" in \"withAll(..., functions)\" is null.");
-
-        return behaviour.withAll(Arrays.stream(functions));
     }
 
     /**
@@ -102,27 +144,6 @@ public interface Behaviour<T> {
     }
 
     /**
-     * Add all {@link Function}s contained by the {@link Function} vararg.
-     * <p>
-     * For more see {@link #withUnapplyAll(Stream)}.
-     *
-     * @param behaviour {@link Behaviour} whose {@link #withUnapplyAll(Stream)} method is called
-     * @param functions {@link Function} vararg
-     * @param <T>       type for this behaviour
-     * @return new {@link Behaviour} with added {@link Function}s
-     * @throws NullPointerException if behaviour is null or
-     *                              if functions is null
-     */
-    @SafeVarargs
-    static <T> Behaviour<T> withUnapplyAll(final Behaviour<T> behaviour, final Function<T, Unappliable>... functions) {
-        Objects.requireNonNull(behaviour,
-                "Behaviour argument \"updateBehaviour\" in \"withUnapplyAll(updateBehaviour, ...)\" is null.");
-        Objects.requireNonNull(functions, "Varags \"functions\" in \"withUnapplyAll(..., functions)\" is null.");
-
-        return behaviour.withUnapplyAll(Arrays.stream(functions));
-    }
-
-    /**
      * Merges two {@link Behaviour}s into a new {@link Behaviour} instance.
      * The merged {@code behaviour} is performed in sequence.
      *
@@ -146,27 +167,6 @@ public interface Behaviour<T> {
                 "Stream argument \"behaviourStream\" in \"mergeAll(behaviourStream)\" is null.");
 
         return behaviourStream.reduce(this, Behaviour::merge);
-    }
-
-    /**
-     * Add all {@link Behaviour}s contained by the {@link Behaviour} vararg.
-     * <p>
-     * For more see {@link #withUnapplyAll(Stream)}.
-     *
-     * @param behaviour  {@link Behaviour} whose {@link #mergeAll(Stream)} method is called
-     * @param behaviours {@link Behaviour} vararg
-     * @param <T>        type for this behaviour
-     * @return new merged {@link Behaviour}
-     * @throws NullPointerException if behaviour is null or
-     *                              if behaviours is null
-     */
-    @SafeVarargs
-    static <T> Behaviour<T> mergeAll(final Behaviour<T> behaviour, final Behaviour<T>... behaviours) {
-        Objects.requireNonNull(behaviour,
-                "Behaviour argument \"updateBehaviour\" in \"mergeAll(updateBehaviour, ...)\" is null.");
-        Objects.requireNonNull(behaviours, "Varags \"behaviours\" in \"mergeAll(..., behaviours)\" is null.");
-
-        return behaviour.mergeAll(Arrays.stream(behaviours));
     }
 
     /**
