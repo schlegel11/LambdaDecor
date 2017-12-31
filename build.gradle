@@ -70,16 +70,25 @@ publishing {
             artifact(javadocJar) {
                 classifier = 'javadoc'
             }
-
-            project.tasks.withType(Sign) {
-                signatures.all {
-                    def type = it.type
-                    if (it.file.name.endsWith('.tar.gz.asc')) {  // Workaround in case a tar.gz file should published
-                        type = 'tar.gz.asc'
-                    } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
-                        type = 'pom.asc'
+            if (project.hasProperty("sign")) {
+                project.tasks.withType(Sign) {
+                    signatures.all {
+                        def type = it.type
+                        if (it.file.name.endsWith('.tar.gz.asc')) {
+                            // Workaround in case a tar.gz file should published
+                            type = 'tar.gz.asc'
+                        } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
+                            type = 'pom.asc'
+                        }
+                        artifact source: it.file, classifier: it.classifier ?: null, extension: type
                     }
-                    artifact source: it.file, classifier: it.classifier ?: null, extension: type
+                }
+            }
+            
+            jar {
+                into("META-INF/maven/$project.group/$project.name") {
+                    from { generatePomFileForMavenJavaPublication }
+                    rename ".*", "pom.xml"
                 }
             }
         }
@@ -126,11 +135,9 @@ publishing {
 }
 
 model {
-    tasks.publishMavenJavaPublicationToMavenLocal {
-        dependsOn project.tasks.withType(Sign)
-    }
     tasks.publishMavenJavaPublicationToNexusReleaseRepository {
         dependsOn project.tasks.withType(Sign)
+
     }
     tasks.signPom {
         dependsOn tasks.generatePomFileForMavenJavaPublication
@@ -138,7 +145,7 @@ model {
 }
 
 
-if(project.hasProperty("sign")) {
+if (project.hasProperty("sign")) {
     signing {
         required = true
         sign configurations.archives
