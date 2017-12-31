@@ -1,6 +1,3 @@
-group 'de.schlegel11'
-version '1.0'
-
 buildscript {
     repositories {
         mavenCentral()
@@ -9,11 +6,150 @@ buildscript {
         classpath 'org.junit.platform:junit-platform-gradle-plugin:1.0.2'
     }
 }
+plugins {
+    id 'io.codearte.nexus-staging' version '0.11.0'
+    id 'ru.vyarus.pom' version '1.2.0'
+}
 
 apply plugin: 'java'
 apply plugin: 'org.junit.platform.gradle.plugin'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+version '1.0'
+group 'de.schlegel11'
+description = 'Decorator and strategy lambda mixture'
 
 sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+
+    options
+            {
+                setMemberLevel JavadocMemberLevel.PUBLIC
+                setAuthor true
+                links "https://docs.oracle.com/javase/8/docs/api/"
+            }
+}
+
+task sourceJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allJava
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+artifacts {
+    archives sourceJar
+    archives javadocJar
+}
+
+task signPom(type: Sign) {
+    sign project.file('build/publications/mavenJava/pom-default.xml')
+    outputs.upToDateWhen { false }  // the signing plugin does not seem to notice
+    // it when the publications folder with the
+    // signature has been deleted. So we always
+    // create a new signature
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+
+            artifact(sourceJar) {
+                classifier = 'sources'
+            }
+            artifact(javadocJar) {
+                classifier = 'javadoc'
+            }
+
+            project.tasks.withType(Sign) {
+                signatures.all {
+                    def type = it.type
+                    if (it.file.name.endsWith('.tar.gz.asc')) {  // Workaround in case a tar.gz file should published
+                        type = 'tar.gz.asc'
+                    } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
+                        type = 'pom.asc'
+                    }
+                    artifact source: it.file, classifier: it.classifier ?: null, extension: type
+                }
+            }
+        }
+    }
+    pom {
+        packaging 'jar'
+        url 'http://schlegel11.de'
+
+        scm {
+            connection 'scm:git://github.com/schlegel11/LambdaDecor.git'
+            developerConnection 'scm:git:git@github.com:schlegel11/LambdaDecor.git'
+            url 'https://github.com/schlegel11/LambdaDecor'
+        }
+        issueManagement {
+            system 'GitHub Issues'
+            url 'https://github.com/schlegel11/LambdaDecor/issues'
+        }
+        licenses {
+            license {
+                name 'The MIT License (MIT)'
+                url 'http://opensource.org/licenses/MIT'
+                distribution 'repo'
+            }
+        }
+        developers {
+            developer {
+                id 'schlegel11'
+                name 'Marcel Schlegel'
+                email 'develop@schlegel11.de'
+                url 'http://schlegel11.de'
+            }
+        }
+    }
+    repositories {
+        maven {
+            name 'NexusRelease'
+            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+            credentials {
+                username = System.getProperty('nexus.username')
+                password = System.getProperty('nexus.password')
+            }
+        }
+    }
+}
+
+model {
+    tasks.publishMavenJavaPublicationToMavenLocal {
+        dependsOn project.tasks.withType(Sign)
+    }
+    tasks.publishMavenJavaPublicationToNexusReleaseRepository {
+        dependsOn project.tasks.withType(Sign)
+    }
+    tasks.signPom {
+        dependsOn tasks.generatePomFileForMavenJavaPublication
+    }
+}
+
+
+
+signing {
+    required = true
+    sign configurations.archives
+}
+
+nexusStaging {
+    username = System.getProperty('nexus.username')
+    password = System.getProperty('nexus.password')
+    numberOfRetries = 10
+    delayBetweenRetriesInMillis = 10000
+}
 
 repositories {
     mavenCentral()
