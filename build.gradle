@@ -138,10 +138,11 @@ model {
 }
 
 
-
-signing {
-    required = true
-    sign configurations.archives
+if(project.hasProperty("sign")) {
+    signing {
+        required = true
+        sign configurations.archives
+    }
 }
 
 nexusStaging {
