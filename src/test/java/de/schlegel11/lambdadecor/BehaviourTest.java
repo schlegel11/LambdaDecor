@@ -11,7 +11,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * @author Marcel Schlegel (schlegel11)
- * @since VERSION
+ * @since 1.0
  */
 class BehaviourTest {
 
