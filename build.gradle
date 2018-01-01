@@ -149,8 +149,10 @@ model {
 }
 
 signing {
-    required = true
-    sign configurations.archives
+    if (project.hasProperty("sign")) {
+        required = true
+        sign configurations.archives
+    }
 }
 
 
