@@ -59,7 +59,6 @@ task signPom(type: Sign) {
     // create a new signature
 }
 
-
 task releaseLambdaDecor(type: GradleBuild) {
     tasks = ['publishMavenJavaPublicationToNexusReleaseRepository', 'closeAndReleaseRepository']
 }
@@ -76,18 +75,16 @@ publishing {
                 classifier = 'javadoc'
             }
 
-            if (project.hasProperty("sign")) {
-                project.tasks.withType(Sign) {
-                    signatures.all {
-                        def type = it.type
-                        if (it.file.name.endsWith('.tar.gz.asc')) {
-                            // Workaround in case a tar.gz file should published
-                            type = 'tar.gz.asc'
-                        } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
-                            type = 'pom.asc'
-                        }
-                        artifact source: it.file, classifier: it.classifier ?: null, extension: type
+            project.tasks.withType(Sign) {
+                signatures.all {
+                    def type = it.type
+                    if (it.file.name.endsWith('.tar.gz.asc')) {
+                        // Workaround in case a tar.gz file should published
+                        type = 'tar.gz.asc'
+                    } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
+                        type = 'pom.asc'
                     }
+                    artifact source: it.file, classifier: it.classifier ?: null, extension: type
                 }
             }
 
@@ -141,20 +138,19 @@ publishing {
 model {
     tasks.publishMavenJavaPublicationToNexusReleaseRepository {
         dependsOn project.tasks.withType(Sign)
-
     }
+
     tasks.signPom {
         dependsOn tasks.generatePomFileForMavenJavaPublication
     }
 }
 
 signing {
-    if (project.hasProperty("sign")) {
-        required = true
-        sign configurations.archives
-    }
+    required = true
+    sign configurations.archives
 }
 
+signArchives.onlyIf { System.getProperty('doSign') != null }
 
 nexusStaging {
     username = System.getProperty('nexus.username')
