@@ -60,9 +60,8 @@ task signPom(type: Sign) {
 }
 
 
-task releaseLambdaDecor{
-    dependsOn 'publishMavenJavaPublicationToNexusReleaseRepository'
-    dependsOn closeAndReleaseRepository
+task releaseLambdaDecor(type: GradleBuild) {
+    tasks = ['publishMavenJavaPublicationToNexusReleaseRepository', 'closeAndReleaseRepository']
 }
 
 publishing {
