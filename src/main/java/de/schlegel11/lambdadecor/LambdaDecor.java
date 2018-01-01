@@ -15,9 +15,10 @@ public interface LambdaDecor<T> {
      * Updates the held {@link Behaviour}.
      *
      * @param behaviour {@link Function} that provides the currently hold {@link Behaviour} and returns the updated {@link Behaviour}
+     * @return this {@link LambdaDecor} object
      * @throws NullPointerException if the {@code behaviour} is null or the return value if the {@link Function} is null
      */
-    void updateBehaviour(Function<Behaviour<T>, Behaviour<T>> behaviour);
+    LambdaDecor<T> updateBehaviour(Function<Behaviour<T>, Behaviour<T>> behaviour);
 
     /**
      * Applies this {@link Behaviour} to the given type {@link T}.

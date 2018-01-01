@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -28,21 +29,38 @@ class DefaultLambdaDecorTest {
                 .apply("1");
 
         assertThat(test).hasValue("1");
+
+        test.set("");
+        DefaultLambdaDecor.<String>create(b -> b.with(test::getAndSet))
+                .apply("1");
+
+        assertThat(test).hasValue("1");
+
     }
 
     @Test
     void createNegative() {
-        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(null))
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(
+                (Behaviour<Object>) null))
                                                              .withMessage(
                                                                      "Behaviour argument \"updateBehaviour\" for initialisation is null.");
+
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(
+                (Function<Behaviour<Object>, Behaviour<Object>>) null))
+                                                             .withMessage(
+                                                                     "Function is null.");
+
+        assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(b -> null))
+                                                             .withMessage(
+                                                                     "Behaviour is null.");
     }
 
     @Test
     void updateBehaviourPositive() {
         AtomicReference<String> test = new AtomicReference<>("2");
-        lambdaDecor.updateBehaviour(b -> b.with(test::getAndSet));
-        lambdaDecor.updateBehaviour(b -> b.with(s -> test.updateAndGet(t -> t + s)));
-        lambdaDecor.apply("1");
+        lambdaDecor.updateBehaviour(b -> b.with(test::getAndSet))
+                   .updateBehaviour(b -> b.with(s -> test.updateAndGet(t -> t + s)))
+                   .apply("1");
 
         assertThat(test).hasValue("12");
     }
