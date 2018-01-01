@@ -19,12 +19,26 @@ public class DefaultBehaviour<T> implements Behaviour<T> {
         this.behaviour = Objects.requireNonNull(behaviour, "Behaviour is null.");
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param function the {@link Function} that provides an new {@link DefaultBehaviour} instance and returns one.
+     * @param <T>      type for this behaviour
+     * @return the new instance
+     * @throws NullPointerException if the {@code function} is null
+     */
     public static <T> Behaviour<T> newBehaviour(final Function<Behaviour<T>, Behaviour<T>>
                                                         function) {
         Objects.requireNonNull(function, "Function is null.");
         return function.apply(newBehaviour());
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param <T> type for this behaviour
+     * @return the new instance
+     */
     public static <T> Behaviour<T> newBehaviour() {
         return new DefaultBehaviour<>();
     }
