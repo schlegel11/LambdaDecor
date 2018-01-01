@@ -14,7 +14,7 @@ It is similar to the decorator or strategy pattern.
 
 ## Documentation
 
-Link to java doc.
+For details see: [JavaDoc](https://schlegel11.github.io/LambdaDecor/javadoc/)
  
 ## Usage
 
@@ -74,3 +74,5 @@ For example the above Behaviour can be recreated with this LambdaDecor:
 ```
 
 #### Real examples
+
+coming soon
