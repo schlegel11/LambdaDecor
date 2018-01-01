@@ -43,7 +43,7 @@ class DefaultLambdaDecorTest {
         assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(
                 (Behaviour<Object>) null))
                                                              .withMessage(
-                                                                     "Behaviour argument \"updateBehaviour\" for initialisation is null.");
+                                                                     "Behaviour argument \"behaviour\" for initialisation is null.");
 
         assertThatExceptionOfType(NullPointerException.class).isThrownBy(() -> DefaultLambdaDecor.create(
                 (Function<Behaviour<Object>, Behaviour<Object>>) null))

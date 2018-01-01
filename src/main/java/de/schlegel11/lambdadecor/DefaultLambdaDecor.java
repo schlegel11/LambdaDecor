@@ -14,17 +14,39 @@ public class DefaultLambdaDecor<T> implements LambdaDecor<T> {
 
     private DefaultLambdaDecor(Behaviour<T> behaviour) {
         this.behaviour = Objects.requireNonNull(behaviour,
-                "Behaviour argument \"updateBehaviour\" for initialisation is null.");
+                "Behaviour argument \"behaviour\" for initialisation is null.");
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param behaviour the {@link Behaviour} for this class
+     * @param <T>       type for this behaviour
+     * @return the new instance
+     * @throws NullPointerException if {@code behaviour} is null
+     */
     public static <T> LambdaDecor<T> create(Behaviour<T> behaviour) {
         return new DefaultLambdaDecor<>(behaviour);
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param behaviourFunction the {@link Function} that provides an new {@link DefaultBehaviour} instance and returns one.
+     * @param <T> type for this behaviour
+     * @return the new instance
+     * @throws NullPointerException if the {@code function} return value is null
+     */
     public static <T> LambdaDecor<T> create(Function<Behaviour<T>, Behaviour<T>> behaviourFunction) {
         return create(Objects.requireNonNull(DefaultBehaviour.newBehaviour(behaviourFunction), "Behaviour is null."));
     }
 
+    /**
+     * Creates a new instance.
+     *
+     * @param <T> type for this behaviour
+     * @return the new instance
+     */
     public static <T> LambdaDecor<T> create() {
         return create(DefaultBehaviour.newBehaviour());
     }
