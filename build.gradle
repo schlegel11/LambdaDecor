@@ -59,6 +59,12 @@ task signPom(type: Sign) {
     // create a new signature
 }
 
+
+task releaseLambdaDecor{
+    dependsOn 'publishMavenJavaPublicationToNexusReleaseRepository'
+    dependsOn closeAndReleaseRepository
+}
+
 publishing {
     publications {
         mavenJava(MavenPublication) {
@@ -70,6 +76,7 @@ publishing {
             artifact(javadocJar) {
                 classifier = 'javadoc'
             }
+
             if (project.hasProperty("sign")) {
                 project.tasks.withType(Sign) {
                     signatures.all {
@@ -84,7 +91,7 @@ publishing {
                     }
                 }
             }
-            
+
             jar {
                 into("META-INF/maven/$project.group/$project.name") {
                     from { generatePomFileForMavenJavaPublication }
@@ -122,14 +129,12 @@ publishing {
             }
         }
     }
-    repositories {
-        maven {
-            name 'NexusRelease'
-            url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
-            credentials {
-                username = System.getProperty('nexus.username')
-                password = System.getProperty('nexus.password')
-            }
+    repositories.maven {
+        name 'NexusRelease'
+        url 'https://oss.sonatype.org/service/local/staging/deploy/maven2/'
+        credentials {
+            username = System.getProperty('nexus.username')
+            password = System.getProperty('nexus.password')
         }
     }
 }
@@ -144,13 +149,11 @@ model {
     }
 }
 
-
-if (project.hasProperty("sign")) {
-    signing {
-        required = true
-        sign configurations.archives
-    }
+signing {
+    required = true
+    sign configurations.archives
 }
+
 
 nexusStaging {
     username = System.getProperty('nexus.username')
