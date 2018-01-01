@@ -21,15 +21,20 @@ public class DefaultLambdaDecor<T> implements LambdaDecor<T> {
         return new DefaultLambdaDecor<>(behaviour);
     }
 
+    public static <T> LambdaDecor<T> create(Function<Behaviour<T>, Behaviour<T>> behaviourFunction) {
+        return create(Objects.requireNonNull(DefaultBehaviour.newBehaviour(behaviourFunction), "Behaviour is null."));
+    }
+
     public static <T> LambdaDecor<T> create() {
         return create(DefaultBehaviour.newBehaviour());
     }
 
     @Override
-    public void updateBehaviour(Function<Behaviour<T>, Behaviour<T>> behaviourFunction) {
+    public LambdaDecor<T> updateBehaviour(Function<Behaviour<T>, Behaviour<T>> behaviourFunction) {
         Objects.requireNonNull(behaviourFunction,
                 "Function argument \"behaviourFunction\" in \"updateBehaviour(behaviourFunction)\" is null.");
         behaviour = Objects.requireNonNull(behaviourFunction.apply(behaviour), "Behaviour is null.");
+        return this;
     }
 
     @Override
