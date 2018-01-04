@@ -60,10 +60,10 @@ task signPom(type: Sign) {
 }
 
 task releaseLambdaDecor(type: GradleBuild) {
-    tasks = ['publishMavenJavaPublicationToNexusReleaseRepository', 'closeAndReleaseRepository', 'releaseDocs', 'createReleaseTag']
+    tasks = ['publishMavenJavaPublicationToNexusReleaseRepository', 'closeAndReleaseRepository', 'commitDocs', 'createReleaseTag']
 }
 
-task releaseDocs {
+task commitDocs {
     def javadocDir = "${project.docsDir}/javadoc"
     def gitDestDir = "${project.projectDir}/releases/${project.version}/api/docs"
     def branch = 'gh-pages'
