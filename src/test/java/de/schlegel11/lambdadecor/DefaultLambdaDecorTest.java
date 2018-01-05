@@ -88,14 +88,27 @@ class DefaultLambdaDecorTest {
     @Test
     void unapply() {
         AtomicReference<String> test = new AtomicReference<>("2");
+        lambdaDecor.updateBehaviour(b -> b.withUnapply(s -> () -> test.updateAndGet(t -> t + s)));
         lambdaDecor.unapply();
 
         assertThat(test).hasValue("2");
+        test.set("");
 
-        lambdaDecor.updateBehaviour(b -> b.withUnapply(s -> () -> test.updateAndGet(t -> s)));
         lambdaDecor.apply("1");
         lambdaDecor.unapply();
 
         assertThat(test).hasValue("1");
+        test.set("");
+
+        lambdaDecor.apply("1");
+        lambdaDecor.apply("2");
+
+        lambdaDecor.unapply();
+
+        assertThat(test).hasValue("12");
+
+        lambdaDecor.unapply();
+
+        assertThat(test).hasValue("12");
     }
 }

@@ -22,6 +22,7 @@ public interface LambdaDecor<T> {
 
     /**
      * Applies this {@link Behaviour} to the given type {@link T}.
+     * The resulting {@link Unappliable} is hold by this {@link LambdaDecor}.
      *
      * @param type specific type {@link T}
      * @return type {@link T} object after applying all {@link Behaviour}s
@@ -30,6 +31,7 @@ public interface LambdaDecor<T> {
 
     /**
      * Performs the specific {@link Unappliable} operation of this {@link Behaviour}.
+     * After that operation the {@link Unappliable} should be empty.
      */
     void unapply();
 }
