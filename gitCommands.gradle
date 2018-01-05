@@ -58,8 +58,8 @@ ext.git = [
 
         hasBranch                  : { branch ->
             def result = gitCommand("branch")
-            Pattern p = Pattern.compile("(${branch}\\b)");
-            Matcher m = p.matcher(result);
+            Pattern p = Pattern.compile("(${branch}\\b)")
+            Matcher m = p.matcher(result)
             m.find()
         },
 
@@ -67,9 +67,9 @@ ext.git = [
             try {
                 gitCommand("ls-files", "--error-unmatch", files.join(','))
             } catch (ignored) {
-                return false;
+                return false
             }
-            return true;
+            return true
         },
 
         getModifiedFiles           : { ... paths ->
@@ -86,8 +86,8 @@ ext.git = [
 
         hasTag                     : { tag ->
             def result = gitCommand("tag")
-            Pattern p = Pattern.compile("(${tag}\\b)");
-            Matcher m = p.matcher(result);
+            Pattern p = Pattern.compile("(${tag}\\b)")
+            Matcher m = p.matcher(result)
             m.find()
         }
 ]

@@ -132,7 +132,7 @@ publishing {
                     if (it.file.name.endsWith('.tar.gz.asc')) {
                         // Workaround in case a tar.gz file should published
                         type = 'tar.gz.asc'
-                    } else if (it.type.equals('xml.asc')) {  // Set correct extension for signature of pom file
+                    } else if (it.type == 'xml.asc') {  // Set correct extension for signature of pom file
                         type = 'pom.asc'
                     }
                     artifact source: it.file, classifier: it.classifier ?: null, extension: type
