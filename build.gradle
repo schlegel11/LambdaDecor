@@ -77,7 +77,7 @@ task commitDocs {
         }
     }
     doLast {
-        git.switchCreateBranch(branch) {
+        git.switchCreateEmptyBranch(branch) {
             annonymCopyTask.execute()
             if (annonymCopyTask.state.skipped && !annonymCopyTask.state.upToDate) {
                 throw new GradleException("Copy doc files -> FAIL: ${annonymCopyTask.state.skipMessage ?: ''}")

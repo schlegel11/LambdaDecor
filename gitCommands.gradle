@@ -7,11 +7,20 @@ import java.util.regex.Pattern
  */
 ext.git = [
 
-        checkoutBranch        : { branch ->
+        checkoutBranch             : { branch ->
             gitCommand("checkout", branch)
         },
 
-        switchCreateBranch    : { branch, closure = {} ->
+        createBranch               : { branch ->
+            gitCommand("checkout", "-b", branch)
+        },
+
+        createEmptyBranch          : { branch ->
+            gitCommand("checkout", "--orphan", branch)
+            gitCommand("rm", "-rf", '.')
+        },
+
+        switchCreateBranch         : { branch, closure = {} ->
             def lastBranch = git.getCurrentBranch()
             git.createOrCheckoutBranch(branch)
             def returnValue = closure(lastBranch)
@@ -19,30 +28,42 @@ ext.git = [
             returnValue
         },
 
-        createOrCheckoutBranch: { branch ->
-            git.hasBranch(branch) ? git.checkoutBranch(branch) : gitCommand("checkout", "-b", branch)
+        switchCreateEmptyBranch    : { branch, closure = {} ->
+            def lastBranch = git.getCurrentBranch()
+            git.createEmptyOrCheckoutBranch(branch)
+            def returnValue = closure(lastBranch)
+            git.checkoutBranch(lastBranch)
+            returnValue
         },
 
-        add                   : { ... files ->
+        createOrCheckoutBranch     : { branch ->
+            git.hasBranch(branch) ? git.checkoutBranch(branch) : git.createBranch(branch)
+        },
+
+        createEmptyOrCheckoutBranch: { branch ->
+            git.hasBranch(branch) ? git.checkoutBranch(branch) : git.createEmptyBranch(branch)
+        },
+
+        add                        : { ... files ->
             gitCommand("add", files.join(','))
         },
 
-        commit                : { message ->
+        commit                     : { message ->
             gitCommand("commit", "-m", message)
         },
 
-        getCurrentBranch      : { ->
+        getCurrentBranch           : { ->
             gitCommand("branch").find('(?<=[*]{1}).*').trim()
         },
 
-        hasBranch             : { branch ->
+        hasBranch                  : { branch ->
             def result = gitCommand("branch")
             Pattern p = Pattern.compile("(${branch}\\b)");
             Matcher m = p.matcher(result);
             m.find()
         },
 
-        hasFiles              : { ... files ->
+        hasFiles                   : { ... files ->
             try {
                 gitCommand("ls-files", "--error-unmatch", files.join(','))
             } catch (ignored) {
@@ -51,19 +72,19 @@ ext.git = [
             return true;
         },
 
-        getModifiedFiles      : { ... paths ->
+        getModifiedFiles           : { ... paths ->
             gitCommand("ls-files", "--modified", paths.join(','))
         },
 
-        hasFilesUpToDate      : { ... files ->
+        hasFilesUpToDate           : { ... files ->
             git.hasFiles(files) && git.getModifiedFiles(files).isEmpty()
         },
 
-        createTag             : { name, message ->
+        createTag                  : { name, message ->
             gitCommand('tag', '-a', name, '-m', message)
         },
 
-        hasTag                : { tag ->
+        hasTag                     : { tag ->
             def result = gitCommand("tag")
             Pattern p = Pattern.compile("(${tag}\\b)");
             Matcher m = p.matcher(result);
