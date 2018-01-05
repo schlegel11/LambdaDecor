@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/schlegel11/LambdaDecor.svg?branch=master)](https://travis-ci.org/schlegel11/LambdaDecor)
 [![Maven Central](https://img.shields.io/maven-central/v/de.schlegel11/lambda-decor.svg)](https://search.maven.org/#search%7Cga%7C1%7Ca%3A%22lambda-decor%22````)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/dfa7dfd1c9ce492cb447b7f8e9bcaa42)](https://www.codacy.com/app/marcel_4/LambdaDecor?utm_source=github.com&utm_medium=referral&utm_content=schlegel11/LambdaDecor&utm_campaign=badger)
+[![Known Vulnerabilities](https://snyk.io/test/github/schlegel11/lambdadecor/badge.svg)](https://snyk.io/test/github/schlegel11/lambdadecor)
 
 Decorator and strategy lambda mixture <br>
 Use lambda's as a way to decorate your classes etc. with new functionality.
