@@ -14,9 +14,9 @@ It is similar to the decorator or strategy pattern.
 
 ## Documentation
 
-##### Version 1.1
+##### Version 1.2 (Latest)
 
-For details see: [JavaDoc](https://schlegel11.github.io/LambdaDecor/releases/1.1/api/docs/)
+For details see: [JavaDoc](https://schlegel11.github.io/LambdaDecor/releases/1.2/api/docs/)
  
 ## Usage
 
@@ -75,6 +75,68 @@ For example the above Behaviour can be recreated with this LambdaDecor:
         lambdaDecor.unapply();
 ```
 
-#### Real examples
+### UI example
 
-coming soon
+##### Construct the behaviour
+
+A sample use case could be a decoration of a JavaFX button.
+In this case we create a final class with static methods for a specific behaviour of a Button object.
+```java
+public final class MyButtonBehaviours {
+
+    public static Button redButton(Button button) {
+        button.setStyle("-fx-background-color: #ff3950"); // Change button color to red
+        return button; // return our button
+    }
+
+    public static Unappliable helloOnClick(Button button) {
+        button.setOnMouseClicked(
+                event -> System.out.println("Hello")); // set a click listener and output "Hello" on click
+        return () -> button.setOnMouseClicked(null); // On unapply set the listener to null
+    }
+
+    public static Unappliable onUnapplyGreenButton(Button button) {
+        return () -> button.setStyle("-fx-background-color: #7fee59"); // Change button color to green
+    }
+}
+```
+
+##### Construct the lambda decor
+
+Next we create our LambdaDecor with functionality of the ButtonBehaviour class.
+```java
+public class Main extends Application {
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        LambdaDecor<Button> buttonDecor = DefaultLambdaDecor.create(b -> b.with(MyButtonBehaviours::redButton)
+                                                                          .withUnapply(
+                                                                                  MyButtonBehaviours::helloOnClick)
+                                                                          .withUnapply(
+                                                                                  MyButtonBehaviours::onUnapplyGreenButton)); // Construct the decor object with its behaviour
+
+        FlowPane root = new FlowPane(5, 5);
+        root.getChildren()
+            .add(buttonDecor.apply(new Button("MyButton"))); // Apply the behaviour to a button object
+        root.getChildren()
+            .add(buttonDecor.apply(new Button("MyButton"))); // Apply the behaviour to a button object
+
+
+        primaryStage.setTitle("Hello World");
+        primaryStage.setScene(new Scene(root, 300, 275));
+        primaryStage.show();
+        primaryStage.iconifiedProperty()
+                    .addListener((c, o, n) -> buttonDecor.unapply()); // If the main window is iconified unapply the behaviour -> button color change to green and listener is set to null
+    }
+
+
+    public static void main(String[] args) {
+        launch(args);
+    }
+}
+```
+
+### Summary
+
+With the LambdaDecor its possible to add functionality to a specific type in a more functional oriented way.
+Further more there is a loose coupling between our specific object and the functionality of it so we can exchange this easily.
