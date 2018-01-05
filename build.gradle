@@ -149,7 +149,7 @@ publishing {
     }
     pom {
         packaging 'jar'
-        url 'http://schlegel11.de'
+        url 'http://lambdadecor.schlegel11.de'
 
         scm {
             connection 'scm:git://github.com/schlegel11/LambdaDecor.git'
