@@ -14,7 +14,7 @@ It is similar to the decorator or strategy pattern.
 
 ## Documentation
 
-#####Version 1.1
+##### Version 1.1
 
 For details see: [JavaDoc](https://schlegel11.github.io/LambdaDecor/releases/1.1/api/docs/)
  
