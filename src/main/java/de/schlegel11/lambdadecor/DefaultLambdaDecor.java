@@ -62,12 +62,13 @@ public class DefaultLambdaDecor<T> implements LambdaDecor<T> {
     @Override
     public T apply(T type) {
         DecorPair<T> pair = behaviour.apply(type);
-        unappliable = pair._Unapply;
+        unappliable = unappliable.andThen(pair._Unapply);
         return pair._Behaviour;
     }
 
     @Override
     public void unapply() {
         unappliable.unapply();
+        unappliable = Unappliable.EMPTY;
     }
 }

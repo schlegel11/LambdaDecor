@@ -18,7 +18,7 @@ apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply from: 'gitCommands.gradle'
 
-version '1.1'
+version '1.2'
 group 'de.schlegel11'
 description = 'Decorator and strategy lambda mixture'
 
@@ -61,7 +61,10 @@ task signPom(type: Sign) {
 }
 
 task releaseLambdaDecor(type: GradleBuild) {
-    tasks = ['publishMavenJavaPublicationToNexusReleaseRepository', 'closeAndReleaseRepository', 'commitDocs', 'createReleaseTag']
+    tasks = ['publishMavenJavaPublicationToNexusReleaseRepository',
+             'closeAndReleaseRepository',
+             'commitDocs',
+             'createReleaseTag']
 }
 
 task commitDocs {
@@ -146,7 +149,7 @@ publishing {
     }
     pom {
         packaging 'jar'
-        url 'http://schlegel11.de'
+        url 'http://lambdadecor.schlegel11.de'
 
         scm {
             connection 'scm:git://github.com/schlegel11/LambdaDecor.git'
